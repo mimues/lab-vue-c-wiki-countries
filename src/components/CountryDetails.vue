@@ -1,4 +1,5 @@
 <template>
+  <div v-if="country.alpha3Code">
     <img :src="`https://flagpedia.net/data/flags/icon/72x54/${country.alpha2Code.toLowerCase()}.png`" alt="country flag"
       style="width: 200px" />
     <h1>{{ country.name.common }}</h1>
@@ -29,16 +30,27 @@
         </tr>
       </tbody>
     </table>
+  </div>
 </template>
+
 <script>
 export default {
-  props: {
-    country: {
-      type: Object,
-    }
+  data() {
+    return {
+      country: {},
+    };
   },
+  watch: {
+    '$route.params.alpha3Code': {
+      async handler() {
+        if (this.$route.params.alpha3Code) {
+          const response = await fetch(`https://ih-countries-api.herokuapp.com/countries/${this.$route.params.alpha3Code.toUpperCase()}`);
+          const country = await response.json();
+          this.country = country;
+        }
+      },
+      immediate: true
+    }
+  }
 }
 </script>
-<style>
-
-</style>
